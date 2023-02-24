@@ -5,7 +5,7 @@ const {check, validationResult} = require('express-validator')
 
 router.use(express.json())
 
-//get all
+//get all users
 router.get('/', async (req, res) => {
     const getUsers = await User.findAll()
     res.json(getUsers)

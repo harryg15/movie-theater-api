@@ -35,16 +35,20 @@ check("status").not().isEmpty().trim().matches("watched")
 
 ], async (req, res) => {
 
-    const errors = validationResult(req)
-    const showToUpdate = await Show.findByPk(req.params.show)
     const user = await User.findByPk(req.params.id)
     const userShows = await user.getShows()
+    const showToUpdate = await Show.findByPk(req.params.show)
 
+    const min = userShows[0].dataValues.id;
+    const max = userShows[userShows.length - 1].dataValues.id
+
+    const errors = validationResult(req)
+    
     if(!errors.isEmpty()) {
         res.send({error: errors.array()})
-    } else if (req.params.show < userShows[0].dataValues.id | req.params.show > userShows[userShows.length - 1].dataValues.id) {
+    } else if (req.params.show < min | req.params.show > max) {
         // if show < 4 OR show > 6 (user2 having related shows in this case with 'id' 4-6, then...)
-        res.send({error: `User doesn't have this show in their collection. Pick an 'id' between ${userShows[0].dataValues.id} & ${userShows[userShows.length - 1].dataValues.id}`})
+        res.send({error: `User doesn't have this show in their collection. Pick an 'id' between ${min} & ${max}`})
     } else {
         const newStatus = {status: req.body.status}
         await showToUpdate.update(newStatus)

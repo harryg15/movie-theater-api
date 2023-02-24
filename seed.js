@@ -4,14 +4,14 @@ const fs = require('fs').promises //helps us get access to promises when dealing
 
 //import our database [x]
 //import the model that we are trying to import our data into [x]
-const {db} = require('./db')
+const {sequelize} = require('./db')
 const { Show, User } = require('./models/index')
 
 
 //write our seed function -> take our json file, create rows with our data into it
 const seed = async () => {
 
-    await db.sync({ force: true }); // clear out database + tables
+    await sequelize.sync({ force: true }); // clear out database + tables
 
     const showSeedPath = path.join(__dirname, 'shows.json'); //get the path to Show.json file
     const userSeedPath = path.join(__dirname, 'users.json')
@@ -27,12 +27,25 @@ const seed = async () => {
     const ShowPromises = showsData.map(show => Show.create(show)); //creates Show and puts it into our Show table
     const UserPromises = usersData.map(user => User.create(user));
 
+    // default associations
+    const User1 = await User.findByPk(1)
+    await User1.addShows(1)
+    await User1.addShows(2)
+    await User1.addShows(3)
+
+    const User2 = await User.findByPk(2)
+    await User2.addShows(4)
+    await User2.addShows(5)
+    await User2.addShows(6)
+
                                         //Show.create({'name': 'Tony', 'age': 25})
     await Promise.all(ShowPromises); // The Promise.all() method takes an iterable of promises as an input, and returns a single Promise that resolves to an array of the results of the input promises.
     await Promise.all(UserPromises)
 
     console.log("Shows and User database info populated!")
 }
+
+seed()
 
 //export my seed function
 module.exports = seed;

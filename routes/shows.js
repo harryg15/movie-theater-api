@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const {User, Show} = require("../models/index")
+const {Show} = require("../models/index")
 const {check, validationResult} = require('express-validator')
 
 router.use(express.json())
